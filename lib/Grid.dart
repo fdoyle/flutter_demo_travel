@@ -3,6 +3,7 @@
 import 'dart:collection';
 import 'dart:math';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
@@ -40,14 +41,14 @@ class Grid extends MultiChildRenderObjectWidget {
   TrackConstraint rowAutoConstraint = Auto();
   double gapSize;
 
-  Grid({
-    Key key,
-    List<Widget> children = const <Widget>[],
-    this.rowConstraints = const <TrackConstraint>[],
-    this.rowAutoConstraint,
-    this.columnConstraints = const <TrackConstraint>[],
-    this.gapSize = 0
-  }) : super(key: key, children: children);
+  Grid(
+      {Key key,
+      List<Widget> children = const <Widget>[],
+      this.rowConstraints = const <TrackConstraint>[],
+      this.rowAutoConstraint,
+      this.columnConstraints = const <TrackConstraint>[],
+      this.gapSize = 0})
+      : super(key: key, children: children);
 
   @protected
   TextDirection getEffectiveTextDirection(BuildContext context) {
@@ -56,7 +57,8 @@ class Grid extends MultiChildRenderObjectWidget {
 
   @override
   RenderGrid createRenderObject(BuildContext context) {
-    return RenderGrid(rowConstraints, columnConstraints, rowAutoConstraint, gapSize);
+    return RenderGrid(
+        rowConstraints, columnConstraints, rowAutoConstraint, gapSize);
   }
 
   @override
@@ -192,8 +194,6 @@ class GridElement {
       ..hEnd = hEnd;
   }
 
-
-
   void addToRow(Track track) {
     _rows.add(track);
     TrackConstraint c = track.constraint;
@@ -234,7 +234,7 @@ class GridElement {
   //to be called after flex width is assigned
   void calculateMinHeight() {
     double widthOfColumns = 0;
-    for(Track t in _columns){
+    for (Track t in _columns) {
       widthOfColumns += t.getSize();
     }
 
@@ -301,8 +301,12 @@ class GridArray {
 
   bool solved = false;
 
-  GridArray(
-      this.rowConstraints, this.columnConstraints, this.rowAutoConstraint, this.gapSize) {
+  List<RenderBox> children = [];
+  double maxWidth = -1;
+  double maxHeight = -1;
+
+  GridArray(this.rowConstraints, this.columnConstraints, this.rowAutoConstraint,
+      this.gapSize) {
     columnTracks =
         SparseList((column) => Track(this.columnConstraints[column], column));
     rowTracks = SparseList((row) {
@@ -321,14 +325,20 @@ class GridArray {
 
   bool hasAddedChildren = false;
 
-  void addChildren(RenderBox firstChild) {
+  void solve(List<RenderBox> children, double maxWidth, double maxHeight) {
+    if(ListEquality().equals(this.children, children) && this.maxWidth == maxWidth && this.maxHeight == maxHeight){
+      return;
+    }
+    this.children = children;
+    this.maxWidth = maxWidth;
+    this.maxHeight = maxHeight;
+
     hasAddedChildren = true;
-    RenderBox child = firstChild;
     var positionedItems = <RenderBox>[];
     var automaticallyPlacedItems = <RenderBox>[];
 
     //filter children to fixed and unfixed
-    while (child != null) {
+    for (RenderBox child in children) {
       print("separating fixed vs automatic");
       var parentData = child.parentData;
       if (parentData is GridParentData && parentData.specifiesPosition()) {
@@ -336,7 +346,6 @@ class GridArray {
       } else {
         automaticallyPlacedItems.add(child);
       }
-      child = nextChild(child);
     }
 
     //place children
@@ -368,9 +377,7 @@ class GridArray {
       rowFractionSum += r.getFraction();
       fixedHeight += r.getFixedSize();
     }
-  }
 
-  void solve(double maxWidth, double maxHeight) {
     double fullGapWidth = gapSize * (columnTracks.length - 1);
     //calculate auto sizes
 
@@ -389,8 +396,6 @@ class GridArray {
       }
       track.autoSize = largestMinWidth;
     }
-
-
 
     //calculate width fractions
     double widthRemainingForFraction;
@@ -649,12 +654,11 @@ class RenderGrid extends RenderBox
   GridArray gridArray;
   double gapSize;
 
-  RenderGrid(
-      this.rowConstraints, this.columnConstraints, this.rowAutoConstraint, this.gapSize) {
-    gridArray = GridArray(rowConstraints, columnConstraints, rowAutoConstraint, gapSize);
+  RenderGrid(this.rowConstraints, this.columnConstraints,
+      this.rowAutoConstraint, this.gapSize) {
+    gridArray = GridArray(
+        rowConstraints, columnConstraints, rowAutoConstraint, gapSize);
   }
-
-
 
   @override
   void performLayout() {
@@ -662,8 +666,8 @@ class RenderGrid extends RenderBox
     var idealHeight = constraints.maxHeight;
 
     gridArray.clear();
-    gridArray.addChildren(firstChild);
-    gridArray.solve(idealWidth, idealHeight);
+//    gridArray.addChildren(firstChild);
+    gridArray.solve(getChildrenAsList(), idealWidth, idealHeight);
     size = constraints.constrain(Size(idealWidth, idealHeight));
 
     RenderBox child = firstChild;
