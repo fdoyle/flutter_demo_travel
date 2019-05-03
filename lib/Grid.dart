@@ -192,6 +192,8 @@ class GridElement {
       ..hEnd = hEnd;
   }
 
+
+
   void addToRow(Track track) {
     _rows.add(track);
     TrackConstraint c = track.constraint;
@@ -296,6 +298,8 @@ class GridArray {
   double fixedHeight = 0;
 
   double gapSize = 0;
+
+  bool solved = false;
 
   GridArray(
       this.rowConstraints, this.columnConstraints, this.rowAutoConstraint, this.gapSize) {
@@ -649,6 +653,8 @@ class RenderGrid extends RenderBox
       this.rowConstraints, this.columnConstraints, this.rowAutoConstraint, this.gapSize) {
     gridArray = GridArray(rowConstraints, columnConstraints, rowAutoConstraint, gapSize);
   }
+
+
 
   @override
   void performLayout() {
