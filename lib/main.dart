@@ -2,7 +2,6 @@ import 'dart:core';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:fast_noise/fast_noise.dart';
 import 'package:grid_experiment_1/Grid.dart';
 
 void main() => runApp(MyApp());
@@ -66,20 +65,52 @@ class _MyHomePageState extends State<MyHomePage> {
           title: Text(widget.title),
         ),
         body: Grid(
-          columnConstraints: [Fixed(150), Fraction(), Fixed(150)],
+          gapSize: 10,
+          columnConstraints: [Fraction(), Fraction(), Fraction()],
           rowAutoConstraint: Auto(),
-//          rowConstraints: [
-//            Fixed(150),
-//            Fixed(150),
-//          ],
+          rowConstraints: [
+            Auto(),
+            Auto(),
+            Auto(),
+            Fixed(80),
+            Fixed(40),
+          ],
           children: <Widget>[
-            GridChild(child: TestWidget(color: Colors.red), vStart: Line(1), vEnd:Span(3), hStart: Line(1), hEnd:Span(3),),
-            GridChild(child: Text("Foo"), vStart: Line(1), vEnd:Span(1), hStart: Line(1), hEnd:Span(2),),
-            GridChild(child: TestWidget(color: Colors.blue.withAlpha(100)), vStart: Line(2), vEnd:Span(2), hStart: Line(1), hEnd:Span(2),),
-            GridChild(child: TestWidget(color: Colors.blue.withAlpha(100)), vStart: Line(1), vEnd:Span(2), hStart: Line(2), hEnd:Span(2),),
-
-            GridChild(child: Text("Bar"), vStart: Line(2), vEnd:Span(1), hStart: Line(1), hEnd:Span(2),),
-
+            GridChild(
+              child: TestWidget(color: Colors.red),
+              vStart: Line(1),
+              vEnd: Span(3),
+              hStart: Line(1),
+              hEnd: Span(3),
+            ),
+            GridChild(
+              child: Text("Foo"),
+              vStart: Line(1),
+              vEnd: Span(1),
+              hStart: Line(1),
+              hEnd: Span(2),
+            ),
+            GridChild(
+              child: TestWidget(color: Colors.blue.withAlpha(100)),
+              vStart: Line(2),
+              vEnd: Span(2),
+              hStart: Line(1),
+              hEnd: Span(2),
+            ),
+            GridChild(
+              child: TestWidget(color: Colors.blue.withAlpha(100)),
+              vStart: Line(1),
+              vEnd: Span(2),
+              hStart: Line(2),
+              hEnd: Span(2),
+            ),
+            GridChild(
+              child: Text("Bar"),
+              vStart: Line(2),
+              vEnd: Span(1),
+              hStart: Line(1),
+              hEnd: Span(2),
+            ),
             GridChild(child: TestWidget(color: Colors.green)),
             GridChild(child: TestWidget(color: Colors.grey)),
             GridChild(child: TestWidget(color: Colors.orange)),
@@ -95,7 +126,6 @@ class _MyHomePageState extends State<MyHomePage> {
 class TestWidget extends StatelessWidget {
   Color color;
 
-
   TestWidget({this.color});
 
   @override
@@ -103,13 +133,13 @@ class TestWidget extends StatelessWidget {
     return AspectRatio(
       aspectRatio: 1,
       child: GestureDetector(
-        onTap: (){
+        onTap: () {
           Scaffold.of(context).showSnackBar(SnackBar(
             content: Text('clicked $color'),
-            ));
+          ));
           print(color);
         },
-        child: Container(color:color),
+        child: Container(color: color),
       ),
     );
   }

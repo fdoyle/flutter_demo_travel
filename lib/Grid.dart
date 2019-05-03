@@ -38,6 +38,7 @@ class Grid extends MultiChildRenderObjectWidget {
   List<TrackConstraint> rowConstraints;
   List<TrackConstraint> columnConstraints;
   TrackConstraint rowAutoConstraint = Auto();
+  double gapSize;
 
   Grid({
     Key key,
@@ -45,6 +46,7 @@ class Grid extends MultiChildRenderObjectWidget {
     this.rowConstraints = const <TrackConstraint>[],
     this.rowAutoConstraint,
     this.columnConstraints = const <TrackConstraint>[],
+    this.gapSize = 0
   }) : super(key: key, children: children);
 
   @protected
@@ -54,7 +56,7 @@ class Grid extends MultiChildRenderObjectWidget {
 
   @override
   RenderGrid createRenderObject(BuildContext context) {
-    return RenderGrid(rowConstraints, columnConstraints, rowAutoConstraint);
+    return RenderGrid(rowConstraints, columnConstraints, rowAutoConstraint, gapSize);
   }
 
   @override
@@ -293,8 +295,10 @@ class GridArray {
   double fixedWidth = 0;
   double fixedHeight = 0;
 
+  double gapSize = 0;
+
   GridArray(
-      this.rowConstraints, this.columnConstraints, this.rowAutoConstraint) {
+      this.rowConstraints, this.columnConstraints, this.rowAutoConstraint, this.gapSize) {
     columnTracks =
         SparseList((column) => Track(this.columnConstraints[column], column));
     rowTracks = SparseList((row) {
@@ -363,6 +367,7 @@ class GridArray {
   }
 
   void solve(double maxWidth, double maxHeight) {
+    double fullGapWidth = gapSize * (columnTracks.length - 1);
     //calculate auto sizes
 
     //calculate auto widths
@@ -388,7 +393,7 @@ class GridArray {
     if (maxWidth == double.infinity) {
       widthRemainingForFraction = 0;
     } else {
-      widthRemainingForFraction = maxWidth - fixedWidth;
+      widthRemainingForFraction = maxWidth - fixedWidth - fullGapWidth;
     }
 
     for (int i = 0; i != columnTracks.length; i++) {
@@ -404,6 +409,7 @@ class GridArray {
       trackStart[t] = cumulativeWidth;
       cumulativeWidth += t.getSize();
       trackEnd[t] = cumulativeWidth;
+      cumulativeWidth += gapSize;
       print("  start ${trackStart[t]}, end ${trackEnd[t]}");
       print("  cumulative width: $cumulativeWidth");
     }
@@ -446,6 +452,7 @@ class GridArray {
       trackStart[t] = cumulativeHeight;
       cumulativeHeight += t.getSize();
       trackEnd[t] = cumulativeHeight;
+      cumulativeHeight += gapSize;
       print("  start ${trackStart[t]}, end ${trackEnd[t]}");
       print("  cumulative height: $cumulativeHeight");
     }
@@ -636,10 +643,11 @@ class RenderGrid extends RenderBox
   TrackConstraint rowAutoConstraint;
 
   GridArray gridArray;
+  double gapSize;
 
   RenderGrid(
-      this.rowConstraints, this.columnConstraints, this.rowAutoConstraint) {
-    gridArray = GridArray(rowConstraints, columnConstraints, rowAutoConstraint);
+      this.rowConstraints, this.columnConstraints, this.rowAutoConstraint, this.gapSize) {
+    gridArray = GridArray(rowConstraints, columnConstraints, rowAutoConstraint, gapSize);
   }
 
   @override
