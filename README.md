@@ -2,15 +2,8 @@
 
 cssGrid experiment
 
-## Getting Started
+This is a *very* experimental (read:bad) implementation of a CSSGrid-like widget, and the possibilities it enables. Think flutter's Table, but better. 
 
-This project is a starting point for a Flutter application.
+![](https://github.com/fdoyle/flutter_demo_travel/blob/master/travel.gif)
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.io/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.io/docs/cookbook)
-
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.io/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+Don't use any of this in production. I wouldn't. 
